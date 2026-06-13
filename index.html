@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>拍攝案例對比｜外出健檢拍攝務實指南</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:    #1A5F8A;
+    --navy-dk: #124266;
+    --navy-lt: #D6EAF8;
+    --cream:   #FAFAF8;
+    --ink:     #2C2C2C;
+    --muted:   #6B7280;
+    --rule:    #DDE4EC;
+    --bad:     #C0392B;
+    --bad-lt:  #FDECEA;
+    --good:    #1E8449;
+    --good-lt: #EAFAF1;
+    --warn:    #B7770D;
+    --warn-lt: #FEF9E7;
+  }
+
+  body {
+    font-family: 'PingFang TC', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+    background: #F0F4F8;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  .header {
+    background: linear-gradient(135deg, var(--navy-dk), var(--navy));
+    color: white;
+    padding: 20px 20px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+  .header-eyebrow { font-size: 11px; letter-spacing: 0.12em; opacity: 0.65; margin-bottom: 4px; }
+  .header-title   { font-size: 18px; font-weight: 700; }
+  .header-sub     { font-size: 12px; opacity: 0.7; margin-top: 3px; }
+
+  .tab-bar {
+    display: flex;
+    overflow-x: auto;
+    background: white;
+    border-bottom: 2px solid var(--rule);
+    scrollbar-width: none;
+    position: sticky;
+    top: 78px;
+    z-index: 99;
+  }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex-shrink: 0;
+    padding: 12px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+    font-family: inherit;
+  }
+  .tab-btn.active { color: var(--navy); border-bottom-color: var(--navy); }
+  .tab-btn .tab-icon { margin-right: 5px; }
+
+  .content { padding: 20px 16px 48px; max-width: 640px; margin: 0 auto; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .case-card {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    margin-bottom: 24px;
+  }
+  .case-header { padding: 14px 18px 12px; border-bottom: 1px solid var(--rule); }
+  .case-title  { font-size: 16px; font-weight: 700; color: var(--navy-dk); margin-bottom: 4px; }
+  .case-desc   { font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; }
+  .compare-side { padding: 14px 12px; }
+  .compare-side + .compare-side { border-left: 1px solid var(--rule); }
+
+  .side-label  { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+  .side-badge  { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+  .side-badge.bad  { background: var(--bad-lt);  color: var(--bad); }
+  .side-badge.good { background: var(--good-lt); color: var(--good); }
+  .side-badge.warn { background: var(--warn-lt); color: var(--warn); }
+
+  .upload-zone {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border: 2px dashed var(--rule);
+    border-radius: 10px;
+    background: #F8FAFC;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .upload-zone:hover, .upload-zone.dragover { border-color: var(--navy); background: var(--navy-lt); }
+  .upload-zone input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .upload-placeholder { text-align: center; pointer-events: none; }
+  .upload-icon  { font-size: 28px; margin-bottom: 6px; }
+  .upload-hint  { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  .preview-img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: none;
+    border-radius: 8px;
+    cursor: zoom-in;
+  }
+  .preview-img.visible { display: block; }
+
+  .change-btn {
+    position: absolute; bottom: 8px; right: 8px;
+    background: rgba(0,0,0,0.55); color: white;
+    border: none; border-radius: 6px;
+    padding: 4px 10px; font-size: 11px;
+    cursor: pointer; display: none;
+    font-family: inherit; z-index: 2;
+  }
+  .upload-zone:hover .change-btn.visible { display: block; }
+  .change-btn.visible { display: block; }
+
+  .annotation { margin-top: 10px; font-size: 12px; line-height: 1.6; padding: 8px 10px; border-radius: 7px; }
+  .annotation.bad  { background: var(--bad-lt);  color: #7B241C; }
+  .annotation.good { background: var(--good-lt); color: #1A6B39; }
+  .annotation.warn { background: var(--warn-lt); color: #7D6608; }
+
+  .key-point {
+    margin: 0 14px 14px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: #F0F6FF;
+    border-left: 3px solid var(--navy);
+    font-size: 12.5px; color: #1a3a5c; line-height: 1.65;
+  }
+  .key-point strong { font-weight: 700; }
+
+  .intro-card {
+    background: white; border-radius: 14px; padding: 24px 20px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.08); margin-bottom: 20px; text-align: center;
+  }
+  .intro-icon  { font-size: 40px; margin-bottom: 12px; }
+  .intro-title { font-size: 20px; font-weight: 700; color: var(--navy-dk); margin-bottom: 8px; }
+  .intro-desc  { font-size: 13.5px; color: var(--muted); line-height: 1.7; }
+
+  .case-list { background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.08); }
+  .case-list-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 18px; border-bottom: 1px solid var(--rule);
+    cursor: pointer; transition: background 0.15s;
+  }
+  .case-list-item:last-child { border-bottom: none; }
+  .case-list-item:hover { background: #F5F9FF; }
+  .case-list-icon  { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .case-list-info  { flex: 1; }
+  .case-list-title { font-size: 14px; font-weight: 700; color: var(--ink); }
+  .case-list-sub   { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .case-list-arrow { color: var(--muted); font-size: 16px; }
+
+  .divider-label { text-align: center; font-size: 11px; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; margin: 20px 0 12px; }
+
+  /* ── Lightbox ── */
+  .lightbox {
+    display: none;
+    position: fixed; inset: 0;
+    z-index: 1000;
+    background: rgba(0,0,0,0.93);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overscroll-behavior: contain;
+  }
+  .lightbox.open { display: flex; }
+
+  .lightbox-close {
+    position: absolute; top: 16px; right: 18px;
+    color: white; font-size: 30px; line-height: 1;
+    cursor: pointer; background: none; border: none;
+    opacity: 0.85; font-family: inherit; z-index: 10;
+    padding: 4px 8px;
+  }
+  .lightbox-counter {
+    position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+    color: rgba(255,255,255,0.55); font-size: 12px; white-space: nowrap; pointer-events: none;
+  }
+  .lightbox-badge-wrap {
+    position: absolute; top: 46px; left: 50%; transform: translateX(-50%);
+    white-space: nowrap; pointer-events: none;
+  }
+  .lightbox-badge-wrap .side-badge { font-size: 13px; padding: 4px 14px; }
+
+  .lightbox-img-wrap {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 90px 56px 72px;
+    pointer-events: none;
+  }
+  .lightbox-img {
+    max-width: 100%; max-height: 100%;
+    object-fit: contain; border-radius: 6px;
+    user-select: none; -webkit-user-drag: none;
+    transition: opacity 0.15s;
+    pointer-events: none;
+  }
+  .lightbox-img.fading { opacity: 0; }
+
+  .lightbox-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,0.13); border: none; color: white;
+    font-size: 20px; width: 44px; height: 44px; border-radius: 50%;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s; z-index: 5;
+  }
+  .lightbox-nav:hover    { background: rgba(255,255,255,0.26); }
+  .lightbox-nav:disabled { opacity: 0.18; cursor: default; }
+  .lightbox-nav.prev { left: 10px; }
+  .lightbox-nav.next { right: 10px; }
+
+  .lightbox-dots {
+    position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 7px; pointer-events: none;
+  }
+  .lightbox-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: background 0.2s; }
+  .lightbox-dot.active { background: white; }
+
+  .lightbox-caption {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 11px 20px;
+    background: rgba(0,0,0,0.5);
+    color: rgba(255,255,255,0.82);
+    font-size: 13px; text-align: center; line-height: 1.6;
+    pointer-events: none;
+  }
+
+  /* ── Media upload zone (video/gif) ── */
+  .media-upload-zone {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 2px dashed var(--rule);
+    border-radius: 10px;
+    background: #F8FAFC;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .media-upload-zone:hover { border-color: var(--navy); background: var(--navy-lt); }
+  .media-placeholder { text-align: center; pointer-events: none; padding: 20px; }
+  .media-change-btn {
+    position: absolute; bottom: 8px; right: 8px;
+    background: rgba(0,0,0,0.55); color: white;
+    border: none; border-radius: 6px;
+    padding: 4px 10px; font-size: 11px;
+    cursor: pointer; font-family: inherit; z-index: 2;
+  }
+</style>
+</head>
+<body>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <div class="lightbox-counter" id="lb-counter"></div>
+  <div class="lightbox-badge-wrap" id="lb-badge"></div>
+  <div class="lightbox-img-wrap">
+    <img class="lightbox-img" id="lb-img" src="" alt="">
+  </div>
+  <button class="lightbox-nav prev" id="lb-prev" onclick="lbNav(-1)">‹</button>
+  <button class="lightbox-nav next" id="lb-next" onclick="lbNav(1)">›</button>
+  <div class="lightbox-dots" id="lb-dots"></div>
+  <div class="lightbox-caption" id="lb-caption"></div>
+</div>
+
+<div class="header">
+  <div class="header-eyebrow">外出健檢拍攝務實指南</div>
+  <div class="header-title">📷 照片對比案例</div>
+  <div class="header-sub">上課教材 · 掃碼在手機上查看</div>
+</div>
+
+<div class="tab-bar" id="tabBar">
+  <button class="tab-btn active" onclick="switchTab(0)"><span class="tab-icon">🏠</span>總覽</button>
+  <button class="tab-btn" onclick="switchTab(1)"><span class="tab-icon">🌫️</span>模糊 vs 清晰</button>
+  <button class="tab-btn" onclick="switchTab(2)"><span class="tab-icon">🤳</span>快門模糊 vs 清晰</button>
+  <button class="tab-btn" onclick="switchTab(3)"><span class="tab-icon">✨</span>智慧美化 vs 原相機</button>
+  <button class="tab-btn" onclick="switchTab(4)"><span class="tab-icon">☀️</span>過曝 vs 正常</button>
+  <button class="tab-btn" onclick="switchTab(5)"><span class="tab-icon">💡</span>光線不足 vs 正常</button>
+  <button class="tab-btn" onclick="switchTab(6)"><span class="tab-icon">📐</span>角度偏斜 vs 正確</button>
+  <button class="tab-btn" onclick="switchTab(7)"><span class="tab-icon">⊞</span>設定｜輔助線</button>
+  <button class="tab-btn" onclick="switchTab(8)"><span class="tab-icon">⊙</span>設定｜原況照片</button>
+  <button class="tab-btn" onclick="switchTab(9)"><span class="tab-icon">🔬</span>微距控制</button>
+</div>
+
+<div class="content">
+
+  <div class="panel active" id="panel-0">
+    <div class="intro-card">
+      <div class="intro-icon">📸</div>
+      <div class="intro-title">照片品質決定判讀結果</div>
+      <div class="intro-desc">以下每個案例展示常見拍攝錯誤與正確示範的對比。<br>點選下方案例或上方分頁查看。</div>
+    </div>
+    <div class="divider-label">案例列表</div>
+    <div class="case-list">
+      <div class="case-list-item" onclick="switchTab(1)">
+        <div class="case-list-icon" style="background:#FDECEA;">🌫️</div>
+        <div class="case-list-info"><div class="case-list-title">模糊 vs 清晰</div><div class="case-list-sub">對焦失敗是最常見的廢片原因</div></div>
+        <div class="case-list-arrow">›</div>
+      </div>
+      <div class="case-list-item" onclick="switchTab(2)">
+        <div class="case-list-icon" style="background:#FFF8F0;">🤳</div>
+        <div class="case-list-info"><div class="case-list-title">快門模糊 vs 清晰</div><div class="case-list-sub">未等快門結束就移動，造成動態模糊</div></div>
+        <div class="case-list-arrow">›</div>
+      </div>
+      <div class="case-list-item" onclick="switchTab(3)">
+        <div class="case-list-icon" style="background:#FDF2FB;">✨</div>
+        <div class="case-list-info"><div class="case-list-title">智慧美化 / 美顏 vs 原相機</div><div class="case-list-sub">美化功能柔化指甲紋路，影響判讀</div></div>
+        <div class="case-list-arrow">›</div>
+      </div>
+      <div class="case-list-item" onclick="switchTab(4)">
+        <div class="case-list-icon" style="background:#FEF9E7;">☀️</div>
+        <div class="case-list-info"><div class="case-list-title">過曝 vs 正常曝光</div><div class="case-list-sub">過曝細節永久遺失，無法後製救回</div></div>
+        <div class="case-list-arrow">›</div>
+      </div>
+      <div class="case-list-item" onclick="switchTab(5)">
+        <div class="case-list-icon" style="background:#EAFAF1;">💡</div>
+        <div class="case-list-info"><div class="case-list-title">光線不足 vs 正常光線</div><div class="case-list-sub">偏暗造成顏色失真，影響判讀準確性</div></div>
+        <div class="case-list-arrow">›</div>
+      </div>
+      <div class="case-list-item" onclick="switchTab(6)">
+        <div class="case-list-icon" style="background:#EAF5FB;">📐</div>
+        <div class="case-list-info"><div class="case-list-title">角度偏斜 vs 正確角度</div><div class="case-list-sub">格式不統一增加後台整理時間</div></div>
+        <div class="case-list-arrow">›</div>
+      </div>
+      <div class="case-list-item" onclick="switchTab(7)">
+        <div class="case-list-icon" style="background:#EEF2FF;">⊞</div>
+        <div class="case-list-info"><div class="case-list-title">手機設定｜輔助線</div><div class="case-list-sub">九宮格輔助線開啟 vs 未開啟</div></div>
+        <div class="case-list-arrow">›</div>
+      </div>
+      <div class="case-list-item" onclick="switchTab(8)">
+        <div class="case-list-icon" style="background:#FFF0F5;">⊙</div>
+        <div class="case-list-info"><div class="case-list-title">手機設定｜原況照片</div><div class="case-list-sub">Live Photo 開啟 vs 關閉</div></div>
+        <div class="case-list-arrow">›</div>
+      </div>
+      <div class="case-list-item" onclick="switchTab(9)">
+        <div class="case-list-icon" style="background:#F0F4FF;">🔬</div>
+        <div class="case-list-info"><div class="case-list-title">微距控制示範</div><div class="case-list-sub">靠近拍攝時的正確做法，影片 / GIF 示範</div></div>
+        <div class="case-list-arrow">›</div>
+      </div>
+    </div>
+  </div>
+  <div class="panel" id="panel-1">
+    <div class="case-card">
+      <div class="case-header">
+        <div class="case-title">🌫️ 模糊 vs 清晰</div>
+        <div class="case-desc">對焦失敗是現場最常見的廢片原因。指甲紋路必須清晰可辨，後台才能判讀。</div>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-side">
+          <div class="side-label"><span class="side-badge bad">❌ 模糊</span></div>
+          <div class="upload-zone" id="zone-1-bad">
+            <input type="file" accept="image/*" onchange="handleUpload(this,'img-1-bad','zone-1-bad','btn-1-bad')">
+            <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>模糊照片</div></div>
+            <img class="preview-img" id="img-1-bad" data-caption="對焦框未落在指甲上，造成整體模糊，後台無法辨識。" data-badge="bad" data-badgetext="❌ 模糊">
+            <button class="change-btn" id="btn-1-bad" onclick="triggerUpload(event,'zone-1-bad')">更換</button>
+          </div>
+          <div class="annotation bad">對焦框未落在指甲上，後台無法辨識。</div>
+        </div>
+        <div class="compare-side">
+          <div class="side-label"><span class="side-badge good">✓ 清晰</span></div>
+          <div class="upload-zone" id="zone-1-good">
+            <input type="file" accept="image/*" onchange="handleUpload(this,'img-1-good','zone-1-good','btn-1-good')">
+            <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>清晰照片</div></div>
+            <img class="preview-img" id="img-1-good" data-caption="對焦框穩定落在指甲上，等待穩定後再按快門，紋路清晰可辨。" data-badge="good" data-badgetext="✓ 清晰">
+            <button class="change-btn" id="btn-1-good" onclick="triggerUpload(event,'zone-1-good')">更換</button>
+          </div>
+          <div class="annotation good">對焦框穩定，紋路清晰，後台可準確判讀。</div>
+        </div>
+      </div>
+      <div class="key-point"><strong>📌 現場處理：</strong>按快門前點擊畫面中央手動對焦，等對焦框穩定再拍。持續失焦時，關閉相機 App 重新開啟。</div>
+    </div>
+  </div>
+  <div class="panel" id="panel-2">
+    <div class="case-card">
+      <div class="case-header">
+        <div class="case-title">🤳 快門模糊 vs 清晰</div>
+        <div class="case-desc">按下快門後相機仍在曝光，若這段時間移動手機就會產生動態模糊。這與對焦模糊不同——是「手沒等穩」造成的拖影或條紋。</div>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-side">
+          <div class="side-label"><span class="side-badge bad">❌ 快門模糊</span></div>
+          <div class="upload-zone" id="zone-2-bad">
+            <input type="file" accept="image/*" onchange="handleUpload(this,'img-2-bad','zone-2-bad','btn-2-bad')">
+            <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>快門模糊照片</div></div>
+            <img class="preview-img" id="img-2-bad" data-caption="按下快門後立即移動手機，曝光尚未結束就產生動態模糊，呈現拖影或條紋。" data-badge="bad" data-badgetext="❌ 快門模糊">
+            <button class="change-btn" id="btn-2-bad" onclick="triggerUpload(event,'zone-2-bad')">更換</button>
+          </div>
+          <div class="annotation bad">按下快門後立即移動，曝光未結束就產生拖影或條紋。</div>
+        </div>
+        <div class="compare-side">
+          <div class="side-label"><span class="side-badge good">✓ 清晰</span></div>
+          <div class="upload-zone" id="zone-2-good">
+            <input type="file" accept="image/*" onchange="handleUpload(this,'img-2-good','zone-2-good','btn-2-good')">
+            <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>清晰照片</div></div>
+            <img class="preview-img" id="img-2-good" data-caption="按下快門後保持手機穩定，等待快門音結束再收手，照片清晰無拖影。" data-badge="good" data-badgetext="✓ 清晰">
+            <button class="change-btn" id="btn-2-good" onclick="triggerUpload(event,'zone-2-good')">更換</button>
+          </div>
+          <div class="annotation good">按下快門後繼續保持穩定，聽到快門聲結束再收手，無拖影。</div>
+        </div>
+      </div>
+      <div class="key-point"><strong>📌 現場處理：</strong>按下快門後維持不動，聽到快門聲結束再移動。光線越暗、快門速度越慢，這個問題越容易發生。</div>
+    </div>
+  </div>
+  <div class="panel" id="panel-3">
+    <div class="case-card">
+      <div class="case-header">
+        <div class="case-title">✨ 智慧美化 / 美顏 vs 原相機</div>
+        <div class="case-desc">手機預設的智慧美化或美顏功能會自動柔化皮膚與指甲紋路，導致細節喪失，影響後台判讀。拍攝前務必確認已關閉所有美化功能。</div>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-side">
+          <div class="side-label"><span class="side-badge bad">❌ 開啟美化</span></div>
+          <div class="upload-zone" id="zone-3-bad">
+            <input type="file" accept="image/*" onchange="handleUpload(this,'img-3-bad','zone-3-bad','btn-3-bad')">
+            <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>美化照片</div></div>
+            <img class="preview-img" id="img-3-bad" data-caption="美顏 / 智慧美化開啟，皮膚與指甲紋路被自動柔化，細節失真，無法準確判讀。" data-badge="bad" data-badgetext="❌ 開啟美化">
+            <button class="change-btn" id="btn-3-bad" onclick="triggerUpload(event,'zone-3-bad')">更換</button>
+          </div>
+          <div class="annotation bad">美顏功能自動柔化指甲紋路，細節失真，後台難以判讀真實狀況。</div>
+        </div>
+        <div class="compare-side">
+          <div class="side-label"><span class="side-badge good">✓ 原相機</span></div>
+          <div class="upload-zone" id="zone-3-good">
+            <input type="file" accept="image/*" onchange="handleUpload(this,'img-3-good','zone-3-good','btn-3-good')">
+            <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>原相機照片</div></div>
+            <img class="preview-img" id="img-3-good" data-caption="關閉所有美化功能，使用原相機拍攝，指甲紋路與皮膚細節完整保留。" data-badge="good" data-badgetext="✓ 原相機">
+            <button class="change-btn" id="btn-3-good" onclick="triggerUpload(event,'zone-3-good')">更換</button>
+          </div>
+          <div class="annotation good">原相機保留所有細節，紋路清晰真實，是後台判讀的正確依據。</div>
+        </div>
+      </div>
+      <div class="key-point"><strong>📌 現場處理：</strong>進入相機前先確認已關閉智慧美化、美顏、濾鏡等功能。部分手機品牌（如 OPPO、vivo、小米）預設開啟，每次使用前需確認。</div>
+    </div>
+  </div>
+  <div class="panel" id="panel-4">
+    <div class="case-card">
+      <div class="case-header">
+        <div class="case-title">☀️ 過曝 vs 正常曝光</div>
+        <div class="case-desc">過曝是最嚴重的失誤——白色區域細節永久消失，後製無法救回，只能重拍。</div>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-side">
+          <div class="side-label"><span class="side-badge bad">❌ 過曝</span></div>
+          <div class="upload-zone" id="zone-4-bad">
+            <input type="file" accept="image/*" onchange="handleUpload(this,'img-4-bad','zone-4-bad','btn-4-bad')">
+            <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>過曝照片</div></div>
+            <img class="preview-img" id="img-4-bad" data-caption="亮部「燒掉」，指甲顏色與紋路細節永久遺失，無法後製救回。" data-badge="bad" data-badgetext="❌ 過曝">
+            <button class="change-btn" id="btn-4-bad" onclick="triggerUpload(event,'zone-4-bad')">更換</button>
+          </div>
+          <div class="annotation bad">亮部「燒掉」，指甲顏色與紋路細節永久遺失，無法後製救回。</div>
+        </div>
+        <div class="compare-side">
+          <div class="side-label"><span class="side-badge good">✓ 正常</span></div>
+          <div class="upload-zone" id="zone-4-good">
+            <input type="file" accept="image/*" onchange="handleUpload(this,'img-4-good','zone-4-good','btn-4-good')">
+            <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>正常曝光照片</div></div>
+            <img class="preview-img" id="img-4-good" data-caption="曝光適中，指甲顏色真實，細節保留完整，後台可清楚判讀。" data-badge="good" data-badgetext="✓ 正常">
+            <button class="change-btn" id="btn-4-good" onclick="triggerUpload(event,'zone-4-good')">更換</button>
+          </div>
+          <div class="annotation good">曝光適中，指甲顏色真實，細節保留完整，後台可清楚判讀。</div>
+        </div>
+      </div>
+      <div class="key-point"><strong>📌 現場處理：</strong>寧可讓照片偏暗，絕不過曝。偏暗的照片後製可以拉亮，過曝的細節永久遺失。</div>
+    </div>
+  </div>
+  <div class="panel" id="panel-5">
+    <div class="case-card">
+      <div class="case-header">
+        <div class="case-title">💡 光線不足 vs 正常光線</div>
+        <div class="case-desc">光線不足讓指甲顏色失真、細節難以辨識，是容易忽略的常見問題。</div>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-side">
+          <div class="side-label"><span class="side-badge bad">❌ 光線不足</span></div>
+          <div class="upload-zone" id="zone-5-bad">
+            <input type="file" accept="image/*" onchange="handleUpload(this,'img-5-bad','zone-5-bad','btn-5-bad')">
+            <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>光線不足照片</div></div>
+            <img class="preview-img" id="img-5-bad" data-caption="整體偏暗，指甲顏色失真，難以判斷是否有異狀。" data-badge="bad" data-badgetext="❌ 光線不足">
+            <button class="change-btn" id="btn-5-bad" onclick="triggerUpload(event,'zone-5-bad')">更換</button>
+          </div>
+          <div class="annotation bad">整體偏暗，指甲顏色失真，難以判斷是否有異狀。</div>
+        </div>
+        <div class="compare-side">
+          <div class="side-label"><span class="side-badge good">✓ 正常光線</span></div>
+          <div class="upload-zone" id="zone-5-good">
+            <input type="file" accept="image/*" onchange="handleUpload(this,'img-5-good','zone-5-good','btn-5-good')">
+            <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>光線正常照片</div></div>
+            <img class="preview-img" id="img-5-good" data-caption="光線充足均勻，指甲顏色真實，細節清晰可辨。" data-badge="good" data-badgetext="✓ 正常光線">
+            <button class="change-btn" id="btn-5-good" onclick="triggerUpload(event,'zone-5-good')">更換</button>
+          </div>
+          <div class="annotation good">光線充足均勻，指甲顏色真實，細節清晰可辨。</div>
+        </div>
+      </div>
+      <div class="key-point"><strong>📌 現場處理：</strong>拍攝前先找光源——自然光最佳，次選室內主燈正上方。避免背光或單側光造成陰影遮蔽。螢幕亮度拉到最高，方便現場確認照片品質。</div>
+    </div>
+  </div>
+  <div class="panel" id="panel-6">
+    <div class="case-card">
+      <div class="case-header">
+        <div class="case-title">📐 角度偏斜 vs 正確角度</div>
+        <div class="case-desc">拍攝角度不統一，後台需要花時間轉向辨識，且偏斜角度可能遮蔽部分指甲細節。</div>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-side">
+          <div class="side-label"><span class="side-badge bad">❌ 偏斜</span></div>
+          <div class="upload-zone" id="zone-6-bad">
+            <input type="file" accept="image/*" onchange="handleUpload(this,'img-6-bad','zone-6-bad','btn-6-bad')">
+            <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>角度偏斜照片</div></div>
+            <img class="preview-img" id="img-6-bad" data-caption="角度偏斜，指甲位置不居中，後台需先判斷方向再辨識。" data-badge="bad" data-badgetext="❌ 偏斜">
+            <button class="change-btn" id="btn-6-bad" onclick="triggerUpload(event,'zone-6-bad')">更換</button>
+          </div>
+          <div class="annotation bad">角度偏斜，指甲位置不居中，後台需先判斷方向再辨識。</div>
+        </div>
+        <div class="compare-side">
+          <div class="side-label"><span class="side-badge good">✓ 正確</span></div>
+          <div class="upload-zone" id="zone-6-good">
+            <input type="file" accept="image/*" onchange="handleUpload(this,'img-6-good','zone-6-good','btn-6-good')">
+            <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>正確角度照片</div></div>
+            <img class="preview-img" id="img-6-good" data-caption="垂直俯拍，指甲居中，格式一致，後台可快速辨識。" data-badge="good" data-badgetext="✓ 正確">
+            <button class="change-btn" id="btn-6-good" onclick="triggerUpload(event,'zone-6-good')">更換</button>
+          </div>
+          <div class="annotation good">垂直俯拍，指甲居中，格式一致，後台可快速辨識。</div>
+        </div>
+      </div>
+      <div class="key-point"><strong>📌 現場處理：</strong>使用九宮格輔助線，讓指甲對準畫面中央。拍完後旋轉校正方向再上傳，後台無需再處理。</div>
+    </div>
+    <div class="case-card">
+      <div class="case-header">
+        <div class="case-title">📐 遮擋 vs 補拍（小拇指）</div>
+        <div class="case-desc">小拇指常被其他腳趾遮擋，需補拍 45 度角照片確保完整記錄。</div>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-side">
+          <div class="side-label"><span class="side-badge warn">⚠️ 遮擋</span></div>
+          <div class="upload-zone" id="zone-6b-bad">
+            <input type="file" accept="image/*" onchange="handleUpload(this,'img-6b-bad','zone-6b-bad','btn-6b-bad')">
+            <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>小拇指被遮照片</div></div>
+            <img class="preview-img" id="img-6b-bad" data-caption="小拇指被第四趾遮擋，俯拍角度看不到完整甲面。" data-badge="warn" data-badgetext="⚠️ 遮擋">
+            <button class="change-btn" id="btn-6b-bad" onclick="triggerUpload(event,'zone-6b-bad')">更換</button>
+          </div>
+          <div class="annotation warn">小拇指被第四趾遮擋，俯拍角度看不到完整甲面。</div>
+        </div>
+        <div class="compare-side">
+          <div class="side-label"><span class="side-badge good">✓ 補拍</span></div>
+          <div class="upload-zone" id="zone-6b-good">
+            <input type="file" accept="image/*" onchange="handleUpload(this,'img-6b-good','zone-6b-good','btn-6b-good')">
+            <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>45度補拍照片</div></div>
+            <img class="preview-img" id="img-6b-good" data-caption="從 45 度角補拍，小拇指甲面完整入鏡。" data-badge="good" data-badgetext="✓ 補拍">
+            <button class="change-btn" id="btn-6b-good" onclick="triggerUpload(event,'zone-6b-good')">更換</button>
+          </div>
+          <div class="annotation good">從 45 度角補拍，小拇指甲面完整入鏡。</div>
+        </div>
+      </div>
+      <div class="key-point"><strong>📌 現場處理：</strong>拍完標準 5 張後，檢查小拇指是否清晰可見。若被遮擋，從側前方 45 度角補拍一張。</div>
+    </div>
+  </div>
+  <div class="panel" id="panel-7">
+    <div class="case-card">
+      <div class="case-header">
+        <div class="case-title">⊞ 手機設定｜輔助線</div>
+        <div class="case-desc">開啟相機九宮格輔助線，可以讓指甲精準對準畫面正中間，確保每張照片構圖一致，後台比對更容易。</div>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-side">
+          <div class="side-label"><span class="side-badge bad">❌ 沒開輔助線</span></div>
+          <div class="upload-zone" id="zone-7-bad">
+            <input type="file" accept="image/*" onchange="handleUpload(this,'img-7-bad','zone-7-bad','btn-7-bad')">
+            <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>無輔助線截圖</div></div>
+            <img class="preview-img" id="img-7-bad" data-caption="相機未開啟輔助線，難以判斷構圖是否居中，容易拍出角度偏移的照片。" data-badge="bad" data-badgetext="❌ 沒開輔助線">
+            <button class="change-btn" id="btn-7-bad" onclick="triggerUpload(event,'zone-7-bad')">更換</button>
+          </div>
+          <div class="annotation bad">沒有參考線，主體容易偏移，構圖不一致。</div>
+        </div>
+        <div class="compare-side">
+          <div class="side-label"><span class="side-badge good">✓ 有開輔助線</span></div>
+          <div class="upload-zone" id="zone-7-good">
+            <input type="file" accept="image/*" onchange="handleUpload(this,'img-7-good','zone-7-good','btn-7-good')">
+            <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>有輔助線截圖</div></div>
+            <img class="preview-img" id="img-7-good" data-caption="開啟九宮格輔助線，指甲對準中央交叉點，構圖精準一致。" data-badge="good" data-badgetext="✓ 有開輔助線">
+            <button class="change-btn" id="btn-7-good" onclick="triggerUpload(event,'zone-7-good')">更換</button>
+          </div>
+          <div class="annotation good">九宮格輔助線讓主體精準居中，構圖格式統一。</div>
+        </div>
+      </div>
+      <div class="key-point"><strong>📌 設定方式：</strong>iOS：設定 → 相機 → 開啟「格線」。Android：開啟相機 → 設定（齒輪）→ 找「輔助線」或「格線」開啟。</div>
+    </div>
+  </div>
+  <div class="panel" id="panel-8">
+    <div class="case-card">
+      <div class="case-header">
+        <div class="case-title">⊙ 手機設定｜原況照片（Live Photo）</div>
+        <div class="case-desc">iPhone 的「原況照片」會在拍攝時同時錄製前後各 1.5 秒的動態影像，導致檔案較大，增加相簿儲存與上傳負擔。健檢拍攝時建議關閉。</div>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-side">
+          <div class="side-label"><span class="side-badge bad">❌ 原況照片開啟</span></div>
+          <div class="upload-zone" id="zone-8-bad">
+            <input type="file" accept="image/*" onchange="handleUpload(this,'img-8-bad','zone-8-bad','btn-8-bad')">
+            <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>開啟原況截圖</div></div>
+            <img class="preview-img" id="img-8-bad" data-caption="原況照片開啟時，每張照片附帶動態影像，檔案大幅增加，上傳 LINE 相簿較慢。" data-badge="bad" data-badgetext="❌ 原況照片開啟">
+            <button class="change-btn" id="btn-8-bad" onclick="triggerUpload(event,'zone-8-bad')">更換</button>
+          </div>
+          <div class="annotation bad">每張照片包含動態影像，檔案大、上傳慢，增加後台整理負擔。</div>
+        </div>
+        <div class="compare-side">
+          <div class="side-label"><span class="side-badge good">✓ 原況照片關閉</span></div>
+          <div class="upload-zone" id="zone-8-good">
+            <input type="file" accept="image/*" onchange="handleUpload(this,'img-8-good','zone-8-good','btn-8-good')">
+            <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>關閉原況截圖</div></div>
+            <img class="preview-img" id="img-8-good" data-caption="原況照片關閉，拍攝一般靜態 JPEG，檔案小、上傳快，後台處理更順暢。" data-badge="good" data-badgetext="✓ 原況照片關閉">
+            <button class="change-btn" id="btn-8-good" onclick="triggerUpload(event,'zone-8-good')">更換</button>
+          </div>
+          <div class="annotation good">一般靜態照片，檔案小、上傳快，後台整理更有效率。</div>
+        </div>
+      </div>
+      <div class="key-point"><strong>📌 設定方式：</strong>iOS：進入相機後，點選右上角同心圓圖示（⊙）將其關閉，圖示變灰代表已關閉。或進入「設定 → 相機 → 保留設定」關閉「原況照片」，下次開啟相機就不會自動恢復。</div>
+    </div>
+  </div>
+  <div class="panel" id="panel-9">
+    <div class="case-card">
+      <div class="case-header">
+        <div class="case-title">🔬 微距控制示範</div>
+        <div class="case-desc">拍攝單片指甲特寫時，靠近距離的控制直接影響對焦是否成功。距離太近超出鏡頭最近對焦距離，反而會失焦。正確做法是用腳調整身體距離，不用手指放大畫面。</div>
+      </div>
+      <div style="padding: 16px 14px 6px;">
+        <div style="font-size:13px; font-weight:700; color:var(--navy-dk); margin-bottom:10px;">📹 示範影片 / GIF</div>
+        <div class="media-upload-zone" id="zone-video" onclick="document.getElementById('input-video').click()">
+          <input type="file" id="input-video" accept="video/*,image/gif" style="display:none" onchange="handleMedia(this,'zone-video','media-preview-video','media-placeholder-video')">
+          <div class="media-placeholder" id="media-placeholder-video">
+            <div style="font-size:32px; margin-bottom:8px;">🎬</div>
+            <div style="font-size:13px; font-weight:600; color:var(--navy-dk); margin-bottom:4px;">點此上傳影片或 GIF</div>
+            <div style="font-size:11.5px; color:var(--muted); line-height:1.6;">支援 MP4、MOV、GIF<br>建議長度 5–30 秒</div>
+          </div>
+          <video id="media-preview-video" style="display:none; width:100%; height:100%; object-fit:contain; border-radius:8px;" controls playsinline></video>
+          <img id="media-preview-gif" style="display:none; width:100%; height:100%; object-fit:contain; border-radius:8px;" alt="GIF 示範">
+          <button class="media-change-btn" id="btn-video" onclick="event.stopPropagation(); document.getElementById('input-video').click()" style="display:none;">更換</button>
+        </div>
+        <div class="annotation good" style="margin-top:10px; margin-bottom:4px;">示範正確的微距拍攝方式：用腳調整距離、手動點擊對焦、等穩定後再按快門。</div>
+      </div>
+      <div style="padding: 6px 14px 14px;">
+        <div class="key-point">
+          <strong>📌 微距拍攝要點：</strong><br>
+          · 最近對焦距離約 8–15 cm（依手機型號不同）<br>
+          · 靠太近反而失焦，用腳後退找到清晰距離<br>
+          · 不用手指放大畫面，數位變焦會嚴重降低畫質<br>
+          · 點擊畫面中央指甲手動對焦，等框穩定再拍
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<script>
+  // ── Tab switching ──
+  function switchTab(idx) {
+    document.querySelectorAll('.panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+    document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Upload ──
+  function handleUpload(input, imgId, zoneId, btnId) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.getElementById(imgId);
+      const btn = document.getElementById(btnId);
+      const zone = document.getElementById(zoneId);
+      img.src = e.target.result;
+      img.classList.add('visible');
+      btn.classList.add('visible');
+      const ph = zone.querySelector('.upload-placeholder');
+      if (ph) ph.style.display = 'none';
+      img.onclick = () => openLightbox(img);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function triggerUpload(event, zoneId) {
+    event.stopPropagation();
+    document.getElementById(zoneId).querySelector('input[type="file"]').click();
+  }
+
+  // ── Drag and drop ──
+  document.querySelectorAll('.upload-zone').forEach(zone => {
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (!file || !file.type.startsWith('image/')) return;
+      const input = zone.querySelector('input[type="file"]');
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      input.files = dt.files;
+      input.dispatchEvent(new Event('change'));
+    });
+  });
+
+  // ── Lightbox ──
+  let lbImages = [];
+  let lbIndex  = 0;
+
+  function openLightbox(clickedImg) {
+    // collect all visible images in the current active panel
+    const activePanel = document.querySelector('.panel.active');
+    const imgs = Array.from(activePanel.querySelectorAll('.preview-img.visible'));
+    lbImages = imgs;
+    lbIndex  = imgs.indexOf(clickedImg);
+    renderLightbox();
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function renderLightbox() {
+    const img     = lbImages[lbIndex];
+    const lbImg   = document.getElementById('lb-img');
+    const caption = img.dataset.caption || '';
+    const badge   = img.dataset.badge   || 'good';
+    const badgeText = img.dataset.badgetext || '';
+
+    lbImg.classList.add('fading');
+    setTimeout(() => {
+      lbImg.src = img.src;
+      lbImg.classList.remove('fading');
+    }, 120);
+
+    document.getElementById('lb-counter').textContent = `${lbIndex + 1} / ${lbImages.length}`;
+    document.getElementById('lb-caption').textContent = caption;
+    document.getElementById('lb-badge').innerHTML = `<span class="side-badge ${badge}">${badgeText}</span>`;
+
+    // dots
+    const dotsEl = document.getElementById('lb-dots');
+    dotsEl.innerHTML = lbImages.map((_, i) =>
+      `<div class="lightbox-dot ${i === lbIndex ? 'active' : ''}"></div>`
+    ).join('');
+
+    document.getElementById('lb-prev').disabled = lbIndex === 0;
+    document.getElementById('lb-next').disabled = lbIndex === lbImages.length - 1;
+  }
+
+  function lbNav(dir) {
+    const next = lbIndex + dir;
+    if (next < 0 || next >= lbImages.length) return;
+    lbIndex = next;
+    renderLightbox();
+  }
+
+  // close on backdrop click
+  document.getElementById('lightbox').addEventListener('click', e => {
+    if (e.target === document.getElementById('lightbox') ||
+        e.target === document.getElementById('lb-img') ||
+        e.target.classList.contains('lightbox-img-wrap')) {
+      closeLightbox();
+    }
+  });
+
+  // keyboard
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('lightbox').classList.contains('open')) return;
+    if (e.key === 'ArrowLeft')  lbNav(-1);
+    if (e.key === 'ArrowRight') lbNav(1);
+    if (e.key === 'Escape')     closeLightbox();
+  });
+
+  // touch swipe
+  let touchStartX = 0;
+  const lb = document.getElementById('lightbox');
+  lb.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) lbNav(dx < 0 ? 1 : -1);
+  });
+
+  // ── Media upload (video / GIF) ──
+  function handleMedia(input, zoneId, videoId, placeholderId) {
+    const file = input.files[0];
+    if (!file) return;
+    const zone = document.getElementById(zoneId);
+    const placeholder = document.getElementById(placeholderId);
+    const changeBtn = zone.querySelector('.media-change-btn');
+    if (placeholder) placeholder.style.display = 'none';
+    if (changeBtn) changeBtn.style.display = 'block';
+
+    if (file.type === 'image/gif') {
+      const gifEl = document.getElementById('media-preview-gif');
+      const reader = new FileReader();
+      reader.onload = e => {
+        gifEl.src = e.target.result;
+        gifEl.style.display = 'block';
+        document.getElementById('media-preview-video').style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    } else {
+      const videoEl = document.getElementById(videoId);
+      videoEl.src = URL.createObjectURL(file);
+      videoEl.style.display = 'block';
+      document.getElementById('media-preview-gif').style.display = 'none';
+    }
+  }
+
+</script>
+
+</body>
+</html>
