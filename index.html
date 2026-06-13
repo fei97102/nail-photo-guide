@@ -303,15 +303,15 @@
 
 <div class="tab-bar" id="tabBar">
   <button class="tab-btn active" onclick="switchTab(0)"><span class="tab-icon">🏠</span>總覽</button>
-  <button class="tab-btn" onclick="switchTab(1)"><span class="tab-icon">🌫️</span>模糊 vs 清晰</button>
+  <button class="tab-btn" onclick="switchTab(1)"><span class="tab-icon">🌫️</span>焦距模糊 vs 清晰</button>
   <button class="tab-btn" onclick="switchTab(2)"><span class="tab-icon">🤳</span>快門模糊 vs 清晰</button>
-  <button class="tab-btn" onclick="switchTab(3)"><span class="tab-icon">✨</span>智慧美化 vs 原相機</button>
-  <button class="tab-btn" onclick="switchTab(4)"><span class="tab-icon">☀️</span>過曝 vs 正常</button>
+  <button class="tab-btn" onclick="switchTab(3)"><span class="tab-icon">✨</span>特效 vs 原相機</button>
+  <button class="tab-btn" onclick="switchTab(4)"><span class="tab-icon">☀️</span>過度曝光 vs 正常</button>
   <button class="tab-btn" onclick="switchTab(5)"><span class="tab-icon">💡</span>光線不足 vs 正常</button>
   <button class="tab-btn" onclick="switchTab(6)"><span class="tab-icon">📐</span>角度偏斜 vs 正確</button>
-  <button class="tab-btn" onclick="switchTab(7)"><span class="tab-icon">⊞</span>設定｜輔助線</button>
-  <button class="tab-btn" onclick="switchTab(8)"><span class="tab-icon">⊙</span>設定｜原況照片</button>
-  <button class="tab-btn" onclick="switchTab(9)"><span class="tab-icon">🔬</span>微距控制</button>
+  <button class="tab-btn" onclick="switchTab(7)"><span class="tab-icon">📏</span>輔助線沒開 vs 有開</button>
+  <button class="tab-btn" onclick="switchTab(8)"><span class="tab-icon">💃🏻</span>原況有開 vs 沒開</button>
+  <button class="tab-btn" onclick="switchTab(9)"><span class="tab-icon">🔬</span>微距控制演示</button>
 </div>
 
 <div class="content">
@@ -341,17 +341,17 @@
       </div>
       <div class="case-list-item" onclick="switchTab(4)">
         <div class="case-list-icon" style="background:#FEF9E7;">☀️</div>
-        <div class="case-list-info"><div class="case-list-title">過度曝光 vs 正常曝光</div><div class="case-list-sub">過曝細節永久遺失，無法後製救回</div></div>
+        <div class="case-list-info"><div class="case-list-title">過度曝光 vs 正常</div><div class="case-list-sub">過曝細節永久遺失，無法後製救回</div></div>
         <div class="case-list-arrow">›</div>
       </div>
       <div class="case-list-item" onclick="switchTab(5)">
         <div class="case-list-icon" style="background:#EAFAF1;">💡</div>
-        <div class="case-list-info"><div class="case-list-title">光線不足 vs 正常光線</div><div class="case-list-sub">偏暗造成顏色失真，影響判讀準確性</div></div>
+        <div class="case-list-info"><div class="case-list-title">光線不足 vs 正常</div><div class="case-list-sub">偏暗造成顏色失真，影響判讀準確性</div></div>
         <div class="case-list-arrow">›</div>
       </div>
       <div class="case-list-item" onclick="switchTab(6)">
         <div class="case-list-icon" style="background:#EAF5FB;">📐</div>
-        <div class="case-list-info"><div class="case-list-title">角度歪斜 vs 正確角度</div><div class="case-list-sub">格式不統一增加後台整理時間</div></div>
+        <div class="case-list-info"><div class="case-list-title">角度歪斜 vs 正確</div><div class="case-list-sub">格式不統一增加後台整理時間</div></div>
         <div class="case-list-arrow">›</div>
       </div>
       <div class="case-list-item" onclick="switchTab(7)">
@@ -393,10 +393,10 @@
           <div class="upload-zone" id="zone-1-good">
             <input type="file" accept="image/*" onchange="handleUpload(this,'img-1-good','zone-1-good','btn-1-good')">
             <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>清晰照片</div></div>
-            <img class="preview-img" id="img-1-good" data-caption="焦距落在指甲上，紋路清晰可辨。" data-badge="good" data-badgetext="✓ 清晰">
+            <img class="preview-img" id="img-1-good" data-caption="焦距落在指甲上，指甲表面紋路清晰可辨。" data-badge="good" data-badgetext="✓ 清晰">
             <button class="change-btn" id="btn-1-good" onclick="triggerUpload(event,'zone-1-good')">更換</button>
           </div>
-          <div class="annotation good">焦距穩定，紋路清晰。</div>
+          <div class="annotation good">焦距穩定，指甲紋路清晰可辨。</div>
         </div>
       </div>
       <div class="key-point"><strong>📌 現場處理：</strong>按快門前點擊畫面中央手動對焦，等對焦框穩定再拍。持續失焦時，關閉相機 App 重新開啟。</div>
@@ -414,20 +414,20 @@
           <div class="upload-zone" id="zone-2-bad">
             <input type="file" accept="image/*" onchange="handleUpload(this,'img-2-bad','zone-2-bad','btn-2-bad')">
             <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>快門模糊照片</div></div>
-            <img class="preview-img" id="img-2-bad" data-caption="按下快門後立即移動手機，曝光尚未結束就產生動態模糊，呈現拖影或條紋。" data-badge="bad" data-badgetext="❌ 快門模糊">
+            <img class="preview-img" id="img-2-bad" data-caption="按下快門後立即移動手機，曝光尚未結束就產生動態模糊。" data-badge="bad" data-badgetext="❌ 快門模糊">
             <button class="change-btn" id="btn-2-bad" onclick="triggerUpload(event,'zone-2-bad')">更換</button>
           </div>
-          <div class="annotation bad">按下快門後立即移動，曝光未結束就產生拖影或條紋。</div>
+          <div class="annotation bad">按下快門後立即移動，曝光尚未結束造成模糊。</div>
         </div>
         <div class="compare-side">
           <div class="side-label"><span class="side-badge good">✓ 清晰</span></div>
           <div class="upload-zone" id="zone-2-good">
             <input type="file" accept="image/*" onchange="handleUpload(this,'img-2-good','zone-2-good','btn-2-good')">
             <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>清晰照片</div></div>
-            <img class="preview-img" id="img-2-good" data-caption="按下快門後保持手機穩定，等待快門結束再收手，照片清晰無拖影。" data-badge="good" data-badgetext="✓ 清晰">
+            <img class="preview-img" id="img-2-good" data-caption="按下快門後保持手機穩定，等待快門結束再收手。" data-badge="good" data-badgetext="✓ 清晰">
             <button class="change-btn" id="btn-2-good" onclick="triggerUpload(event,'zone-2-good')">更換</button>
           </div>
-          <div class="annotation good">按下快門後繼續保持穩定，聽到快門聲結束再收手，無拖影。</div>
+          <div class="annotation good">按下快門後繼續保持穩定，等待快門結束再收手。</div>
         </div>
       </div>
       <div class="key-point"><strong>📌 現場處理：</strong>按下快門後維持不動，等待照片顯示於相簿。光線越暗、快門速度越慢，這個問題越容易發生。</div>
