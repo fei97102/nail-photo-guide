@@ -361,7 +361,7 @@
       </div>
       <div class="case-list-item" onclick="switchTab(8)">
         <div class="case-list-icon" style="background:#FFF0F5;">💃🏻</div>
-        <div class="case-list-info"><div class="case-list-title">原況有開 va 沒開</div><div class="case-list-sub">Live Photo 開啟 vs 關閉</div></div>
+        <div class="case-list-info"><div class="case-list-title">原況有開 vs 沒開</div><div class="case-list-sub">Live Photo 開啟 vs 關閉</div></div>
         <div class="case-list-arrow">›</div>
       </div>
       <div class="case-list-item" onclick="switchTab(9)">
@@ -621,7 +621,7 @@
     <div class="case-card">
       <div class="case-header">
         <div class="case-title">💃🏻 原況有開 vs 沒開</div>
-        <div class="case-desc">iPhone 的「原況照片（Live Photo）」會在拍攝時同時錄製前後各 1.5 秒的動態影像，導致檔案較大，增加相簿儲存與上傳負擔。健檢拍攝時建議關閉。</div>
+        <div class="case-desc">iPhone 的「原況照片（Live Photo）」會在拍攝時同時錄製前後各 1.5 秒的動態影像，導致檔案較大，且會壓縮畫質。健檢拍攝時建議關閉。</div>
       </div>
       <div class="compare-grid">
         <div class="compare-side">
@@ -629,20 +629,20 @@
           <div class="upload-zone" id="zone-8-bad">
             <input type="file" accept="image/*" onchange="handleUpload(this,'img-8-bad','zone-8-bad','btn-8-bad')">
             <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>開啟原況截圖</div></div>
-            <img class="preview-img" id="img-8-bad" data-caption="原況照片開啟時，每張照片附帶動態影像，檔案大幅增加，上傳圖檔時較慢。" data-badge="bad" data-badgetext="❌ 原況照片開啟">
+            <img class="preview-img" id="img-8-bad" data-caption="原況照片開啟時，每張照片附帶動態影像，檔案大、解析度較低，導致上傳慢、畫質低" data-badge="bad" data-badgetext="❌ 原況照片開啟">
             <button class="change-btn" id="btn-8-bad" onclick="triggerUpload(event,'zone-8-bad')">更換</button>
           </div>
-          <div class="annotation bad">每張照片包含動態影像，檔案大、上傳慢，加長上傳時間。</div>
+          <div class="annotation bad">每張照片包含動態影像，檔案大、解析度較低，導致上傳慢、畫質低。</div>
         </div>
         <div class="compare-side">
           <div class="side-label"><span class="side-badge good">✓ 原況照片關閉</span></div>
           <div class="upload-zone" id="zone-8-good">
             <input type="file" accept="image/*" onchange="handleUpload(this,'img-8-good','zone-8-good','btn-8-good')">
             <div class="upload-placeholder"><div class="upload-icon">📁</div><div class="upload-hint">點此上傳<br>關閉原況截圖</div></div>
-            <img class="preview-img" id="img-8-good" data-caption="原況照片關閉，拍攝一般靜態 JPEG，檔案小、上傳更順暢。" data-badge="good" data-badgetext="✓ 原況照片關閉">
+            <img class="preview-img" id="img-8-good" data-caption="原況照片關閉，拍攝一般靜態 JPEG，畫質較高、檔案小。" data-badge="good" data-badgetext="✓ 原況照片關閉">
             <button class="change-btn" id="btn-8-good" onclick="triggerUpload(event,'zone-8-good')">更換</button>
           </div>
-          <div class="annotation good">一般靜態照片，檔案小、上傳快，整理更有效率。</div>
+          <div class="annotation good">一般靜態照片，解析高、檔案小、上傳快，整理更有效率。</div>
         </div>
       </div>
       <div class="key-point"><strong>📌 設定方式：</strong>iOS：進入相機後，點選右上角同心圓圖示（⊙）將其關閉，圖示變灰代表已關閉。或進入「設定 → 相機 → 保留設定」關閉「原況照片」，下次開啟相機就不會自動恢復。</div>
